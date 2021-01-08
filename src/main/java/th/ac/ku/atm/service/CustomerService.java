@@ -1,7 +1,9 @@
 package th.ac.ku.atm.service;
 
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import th.ac.ku.atm.data.CustomerRepository;
 import th.ac.ku.atm.model.Customer;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -9,31 +11,33 @@ import java.util.List;
 
 @Service
 public class CustomerService {
+    //หน้าที่ประมวลผล
+    //responsible for processing and managing
+    //customer information
 
-    private List<Customer> customerList;
+    private CustomerRepository repository;
 
-    @PostConstruct
-    public void postConstruct(){
-        this.customerList = new ArrayList<>();
+    public CustomerService(CustomerRepository repository) {
+        this.repository = repository;
     }
 
     public void createCustomer(Customer customer){
         //....hash pin for customer...
         String hashPin = hash(customer.getPin());
         customer.setPin(hashPin);
-        customerList.add(customer);
+        repository.save(customer);
     }
 
     public List<Customer> getCustomerList(){
-        return new ArrayList<>(this.customerList);
+        return repository.findAll();
     }
 
     public Customer findCustomer(int id){
-        for (Customer customer : customerList){
-            if (customer.getId() == id)
-                return customer;
+        try {
+            return repository.findById(id);
+        }catch (EmptyResultDataAccessException e){
+            return null;
         }
-        return null;
     }
 
     public Customer checkPin(Customer inputCustomer){
@@ -50,7 +54,6 @@ public class CustomerService {
         // 3. ถ้าไม่ตรง ต้องคืนค่า null
         return null;
     }
-
 
     private String hash(String pin){
         String salt = BCrypt.gensalt(12);
