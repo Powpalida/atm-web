@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import th.ac.ku.atm.model.Customer;
+import th.ac.ku.atm.service.BankAccountService;
 import th.ac.ku.atm.service.CustomerService;
 
 @Controller
@@ -14,9 +15,11 @@ import th.ac.ku.atm.service.CustomerService;
 public class LoginController {
 
     private CustomerService customerService;
+    private BankAccountService bankAccountService;
 
-    public LoginController(CustomerService customerService) {
+    public LoginController(CustomerService customerService, BankAccountService bankAccountService) {
         this.customerService = customerService;
+        this.bankAccountService = bankAccountService;
     }
 
     @GetMapping
@@ -31,11 +34,15 @@ public class LoginController {
 
         //2. ถ้าตรง ส่งข้อมูล customer กลับไปแสดงผล
         if (matchingCustomer != null){
-            model.addAttribute("greeting","Welcome, "+matchingCustomer.getName());
+            model.addAttribute("customertitle",matchingCustomer.getName() + " Bank Accounts");
+            //ส่ง list ของ bankaccount ไปด้วย (ไปต่อกับbankAccountService ส่ง id ของเราเข้าไป)
+            model.addAttribute("bankaccounts",bankAccountService.getCustomerBankAccounts(customer.getId()));
+
+            return "customeraccount";
         }else{
             //3. ถ้าไม่ตรง แจ้งว่าไม่มีข้อมูล customer นี้
             model.addAttribute("greeting","Can't find customer");
+            return "home";
         }
-        return "home";
     }
 }
