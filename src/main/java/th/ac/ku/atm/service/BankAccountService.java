@@ -27,6 +27,7 @@ public class BankAccountService {
         this.restTemplate = restTemplate;
     }
 
+    //ตาม id ที่ระบุ
     public List<BankAccount> getCustomerBankAccounts(int customerId){
         //connect to BankAccount API service
         String url = "http://localhost:8091/api/bankaccount/customer/" +customerId;
@@ -37,8 +38,24 @@ public class BankAccountService {
         return Arrays.asList(accounts);     //คือค่าแปลงให้เป็น list
 
     }
-/*
-    public void createBankAccount(BankAccount bankAccount){
+
+    //ของ BankAccount ทั้งหมด
+    public List<BankAccount> getBankAccounts(){
+        String url = "http://localhost:8091/api/bankaccount/";
+
+        ResponseEntity<BankAccount[]> response =
+                restTemplate.getForEntity(url,BankAccount[].class); //การ get ที่ไปต่อกับ API
+        BankAccount[] accounts = response.getBody();
+        return Arrays.asList(accounts);
+    }
+
+    public void openAccount(BankAccount bankAccount){
+        String url = "http://localhost:8091/api/bankaccount";
+
+        restTemplate.postForObject(url,bankAccount,BankAccount.class);
+    }
+
+   /* public void createBankAccount(BankAccount bankAccount){
         bankAccountList.add(bankAccount);
     }
     //find BankAccount ส่งid bnk เหมือน customer
@@ -58,8 +75,8 @@ public class BankAccountService {
             return  storedBankAccount;
         }
         return null;
-    }
-
+    }*/
+/*
     //เพื่อแสดงผล
     public List<BankAccount> getBankAccountList() {
         return new ArrayList<>(this.bankAccountList);
