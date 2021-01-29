@@ -39,11 +39,20 @@ public class BankAccountController {
     }
 
     @PostMapping("/edit/{id}")
-    public String editAccount(@PathVariable int id,@ModelAttribute BankAccount bankAccount,Model model){
-        accountService.editBankAccount(bankAccount);
+    public String editAccount(@PathVariable int id,
+                              @ModelAttribute BankAccount bankAccount,
+                              double inputAmount, String transaction, Model model){
+        BankAccount record = accountService.getBankAccount(bankAccount.getId()) ;
+        if (transaction.equals("deposit")) {
+            record.setBalance(record.getBalance() + inputAmount);
+        } else {
+            record.setBalance(record.getBalance() - inputAmount);
+        }
+        accountService.editBankAccount(record);
         model.addAttribute("bankaccounts",accountService.getBankAccounts());
         return "redirect:/bankaccount";
     }
+
     //รับข้อมูลบัญชี
     @GetMapping("/delete/{id}")
     public String getDeleteBankAccount(@PathVariable int id,Model model){
