@@ -19,7 +19,7 @@ public class BankAccountController {
     }
 
     @GetMapping
-    public  String getBankAccountPage(Model model){
+    public  String getBankAccountPage( Model model){
         model.addAttribute("bankaccounts", accountService.getBankAccounts());
         return "bankaccount";
     }
